@@ -5,7 +5,6 @@
       #wall {
         /* border: 2px solid black; */
         background-color: antiquewhite;
-        position: relative;
       }
     </style>
   </head>
@@ -19,28 +18,60 @@
     <button id="addFrame">Add Frame</button>
     <button id="removeFrame">Remove Frame</button>
     <button id="distributeFrames">Distribute Frames</button>
+    <button id="equidistantFrames">Equidistant Frames</button>
     <hr />
 
-    <canvas id="wall" width="500" height="500"></canvas>
+    <canvas id="wall" width="1000" height="100"></canvas>
     <script>
       let frames = [];
       let canvas = document.getElementById("wall");
       let ctx = canvas.getContext("2d");
       let addFrameButton = document.getElementById("addFrame");
+      let distributeFramesButton = document.getElementById("distributeFrames");
+      let equidistantFramesButton = document.getElementById("equidistantFrames");
+
+      const yLocation = canvas.height / 2;
 
       addFrameButton.addEventListener("click", addFrame);
+      distributeFramesButton.addEventListener("click", distributeFrames);
+      equidistantFramesButton.addEventListener("click", equidistantFrames);
+
+      function equidistantFrames() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let wallWidth = parseInt(canvas.width);
+
+        let sortedFrames = frames.slice().sort((a, b) => a.x - b.x);
+
+        let totalWidth = sortedFrames.reduce(
+          (acc, frame) => acc + frame.width,
+          0
+        );
+        let totalGap = wallWidth - totalWidth;
+        let gapEvery = totalGap / (sortedFrames.length + 1);
+
+        let currentX = gapEvery;
+        sortedFrames.forEach((frame) => {
+          frame.x = currentX;
+          currentX += frame.width + gapEvery;
+        });
+
+        sortedFrames.forEach(drawFrame);
+        drawDistances();
+      }
 
       function distributeFrames() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         let wallWidth = parseInt(canvas.width);
         let frameCount = frames.length;
         let frameEvery = wallWidth / (frameCount + 1);
-        frames.forEach((frame, index) => {
+
+        let sortedFrames = frames.slice().sort((a, b) => a.x - b.x);
+        sortedFrames.forEach((frame, index) => {
           frame.x = (index + 1) * frameEvery - frame.width / 2;
-          frame.y = 0;
+          frame.y = yLocation - frame.height / 2;
           console.log(frame.x, frame.y);
         });
-        frames.forEach(drawFrame);
+        sortedFrames.forEach(drawFrame);
 
         drawDistances();
       }
@@ -61,8 +92,8 @@
         distances.forEach((distance) => {
           ctx.strokeStyle = "black";
           ctx.beginPath();
-          ctx.moveTo(distance.x1, 10);
-          ctx.lineTo(distance.x2, 10);
+          ctx.moveTo(distance.x1, yLocation);
+          ctx.lineTo(distance.x2, yLocation);
           ctx.stroke();
 
           let distanceTwoDecimals = (distance.x2 - distance.x1).toFixed(2);
