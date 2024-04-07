@@ -3,6 +3,7 @@ let canvas = document.getElementById('wall');
 let ctx = canvas.getContext('2d');
 let addFrameButton = document.getElementById('addFrame');
 let setWallButton = document.getElementById('setWall');
+let distributionStyle = document.getElementById('distributionStyle');
 let chevronSize = 5;
 let wallWidth = 300;
 let ratioCanvasSizeToWallSize = wallWidth / canvas.width; // 300cm to canvas.width ratio
@@ -12,8 +13,6 @@ let selectedFrame = null;
 
 const yLocation = canvas.height / 3;
 
-let distributionStyleRadios = document.querySelectorAll('input[name="distributionStyle"]');
-
 addFrameButton.addEventListener('click', addFrame);
 
 function saveState() {
@@ -21,12 +20,12 @@ function saveState() {
     .sort((a, b) => a.x - b.x)
     .map((frame) => (frame.width * ratioCanvasSizeToWallSize).toFixed(2));
 
-  let distributionStyle = document.querySelector('input[name="distributionStyle"]:checked').value;
+  let distributionStyleV = distributionStyle.value;
   let dist = 'ff';
 
-  if (distributionStyle === 'dd') {
+  if (distributionStyleV === 'dd') {
     dist = 'dd';
-  } else if (distributionStyle === 'eq') {
+  } else if (distributionStyleV === 'eq') {
     dist = 'eq';
   }
 
@@ -66,26 +65,12 @@ function loadState() {
   });
 
   if (dist === 'dd') {
-    distributionStyleRadios.forEach((radio) => {
-      if (radio.value === 'dd') {
-        radio.checked = true;
-      }
-    });
     distributeFramesEvenly();
   } else if (dist === 'eq') {
-    distributionStyleRadios.forEach((radio) => {
-      if (radio.value === 'eq') {
-        radio.checked = true;
-      }
-    });
     distributeFramesSameDistance();
-  } else {
-    distributionStyleRadios.forEach((radio) => {
-      if (radio.value === 'ff') {
-        radio.checked = true;
-      }
-    });
   }
+
+  distributionStyle.value = dist;
 
   wallWidthInput.value = `${wallWidth}cm`;
 
@@ -216,11 +201,11 @@ function addFrame() {
   };
   frames.push(frame);
 
-  let distributionStyle = document.querySelector('input[name="distributionStyle"]:checked').value;
+  let distributionStyleV = distributionStyle.value;
 
-  if (distributionStyle === 'dd') {
+  if (distributionStyleV === 'dd') {
     distributeFramesEvenly();
-  } else if (distributionStyle === 'eq') {
+  } else if (distributionStyleV === 'eq') {
     distributeFramesSameDistance();
   }
 
@@ -275,16 +260,14 @@ canvas.addEventListener('mouseup', function (e) {
   drawCanvas();
 });
 
-distributionStyleRadios.forEach((radio) => {
-  radio.addEventListener('change', function () {
-    if (radio.value === 'dd') {
-      distributeFramesEvenly();
-    } else if (radio.value === 'eq') {
-      distributeFramesSameDistance();
-    }
+distributionStyle.addEventListener('change', function () {
+  if (this.value === 'dd') {
+    distributeFramesEvenly();
+  } else if (this.value === 'eq') {
+    distributeFramesSameDistance();
+  }
 
-    drawCanvas();
-  });
+  drawCanvas();
 });
 
 loadState();

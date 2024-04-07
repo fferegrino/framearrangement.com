@@ -26,23 +26,24 @@
     </style>
   </head>
   <body>
-    <h1>Frame arrangement</h1>
-
     <div class="canvas-container">
-      <input id="wallWidth" placeholder="3.0m" value="3.0m" />
-      <button id="setWall">Set Wall Dimensions</button>
-    </div>
-    <div class="canvas-container">
-      <input id="frameWidth" value="30cm" placeholder="30cm" />
-      <button id="addFrame">Add Frame</button>
-      <input type="radio" id="distributionDistributed" name="distributionStyle" value="dd" />
-      <label for="distributionDistributed">Distribute Frames</label>
-      <input type="radio" id="distributionEquidistant" name="distributionStyle" value="eq" checked />
-      <label for="distributionEquidistant">Equidistant Frames</label>
-      <input type="radio" id="distributionFreeform" name="distributionStyle" value="ff" />
-      <label for="distributionFreeform">Freeform</label>
+      <h1 class="text-center text-3xl font-bold text-gray-800">Frame arrangement</h1>
     </div>
 
+    <div class="canvas-container">
+      <div class="grid grid-cols-2 gap-4">
+        <input class="col-span-1" id="wallWidth" placeholder="3.0m" value="3.0m" />
+        <button id="setWall">Set Wall Dimensions</button>
+
+        <input class="col-span-1" id="frameWidth" value="30cm" placeholder="30cm" />
+        <button id="addFrame">Add Frame</button>
+        <select id="distributionStyle" class="col-span-1">
+          <option value="dd">Distribute Frames</option>
+          <option value="eq">Equidistant Frames</option>
+          <option value="ff">Freeform</option>
+        </select>
+      </div>
+    </div>
     <div class="canvas-container">
       <canvas id="wall" width="1000" height="300"></canvas>
     </div>
