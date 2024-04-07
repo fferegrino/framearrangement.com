@@ -9,16 +9,35 @@
     </style>
   </head>
   <body>
-    <input id="wallWidth" placeholder="Wall Width" />
+    <input id="wallWidth" placeholder="5.0m" />
     <input id="wallHeight" placeholder="Wall Height" />
     <button id="setWall">Set Wall Dimensions</button>
     <hr />
     <input id="frameWidth" value="20" placeholder="Frame Width" />
     <input id="frameHeight" placeholder="Frame Height" />
     <button id="addFrame">Add Frame</button>
-    <button id="removeFrame">Remove Frame</button>
-    <button id="distributeFrames">Distribute Frames</button>
-    <button id="equidistantFrames">Equidistant Frames</button>
+    <input
+      type="radio"
+      id="distributionDistributed"
+      name="distributionStyle"
+      value="distribute"
+    />
+    <label for="distribute">Distribute Frames</label>
+    <input
+      type="radio"
+      id="distributionEquidistant"
+      name="distributionStyle"
+      value="equidistant"
+    />
+    <label for="equidistant">Equidistant Frames</label>
+    <input
+      type="radio"
+      id="distributionFreeform"
+      name="distributionStyle"
+      value="freeform"
+    />
+    <label for="freeform">Freeform</label>
+
     <hr />
 
     <canvas id="wall" width="1000" height="100"></canvas>
@@ -27,14 +46,38 @@
       let canvas = document.getElementById("wall");
       let ctx = canvas.getContext("2d");
       let addFrameButton = document.getElementById("addFrame");
-      let distributeFramesButton = document.getElementById("distributeFrames");
-      let equidistantFramesButton = document.getElementById("equidistantFrames");
+      let chevronSize = 5;
+      let ratioCanvasSizeToWallSize = 500 / 1000; // 500cm to 1000px
 
       const yLocation = canvas.height / 2;
 
       addFrameButton.addEventListener("click", addFrame);
-      distributeFramesButton.addEventListener("click", distributeFrames);
-      equidistantFramesButton.addEventListener("click", equidistantFrames);
+
+      function parseMeasurementToCm(measurement) {
+        let measurementInCm = 0;
+        if (measurement.includes("cm")) {
+          measurementInCm = parseFloat(measurement);
+        } else if (measurement.includes("m")) {
+          measurementInCm = parseFloat(measurement) * 100;
+        } else {
+          measurementInCm = parseFloat(measurement);
+        }
+        return measurementInCm;
+      }
+
+      let setWallButton = document.getElementById("setWall");
+
+      setWallButton.addEventListener("click", function () {
+        let wallWidth = parseMeasurementToCm(
+          document.getElementById("wallWidth").value
+        );
+
+        ratioCanvasSizeToWallSize = wallWidth / canvas.width;
+        console.log(ratioCanvasSizeToWallSize);
+
+        drawDistance(0, canvas.width, yLocation + 20);
+        distributeFrames();
+      });
 
       function equidistantFrames() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -76,6 +119,35 @@
         drawDistances();
       }
 
+      function drawDistance(x1, x2, y) {
+        ctx.strokeStyle = "black";
+        ctx.beginPath();
+        ctx.moveTo(x1, y);
+        ctx.lineTo(x2, y);
+
+        // Add chevrons to indicate direction
+        ctx.moveTo(x1, y);
+        ctx.lineTo(x1 + chevronSize, y - chevronSize);
+        ctx.moveTo(x1, y);
+        ctx.lineTo(x1 + chevronSize, y + chevronSize);
+
+        ctx.moveTo(x2, y);
+        ctx.lineTo(x2 - chevronSize, y - chevronSize);
+        ctx.moveTo(x2, y);
+        ctx.lineTo(x2 - chevronSize, y + chevronSize);
+
+        ctx.stroke();
+
+        let distanceTwoDecimals = (
+          (x2 - x1) *
+          ratioCanvasSizeToWallSize
+        ).toFixed(2);
+        let distanceText = `${distanceTwoDecimals}cm`;
+        ctx.font = "20px serif";
+        let textWidth = ctx.measureText(distanceText).width;
+        ctx.fillText(distanceText, x1 + (x2 - x1) / 2 - textWidth / 2, y);
+      }
+
       function drawDistances() {
         let sortedFrames = frames.slice().sort((a, b) => a.x - b.x);
         let distances = [];
@@ -90,38 +162,46 @@
         }
 
         distances.forEach((distance) => {
-          ctx.strokeStyle = "black";
-          ctx.beginPath();
-          ctx.moveTo(distance.x1, yLocation);
-          ctx.lineTo(distance.x2, yLocation);
-          ctx.stroke();
-
-          let distanceTwoDecimals = (distance.x2 - distance.x1).toFixed(2);
-          ctx.font = "20px serif";
-          let textWidth = ctx.measureText(distanceTwoDecimals).width;
-          ctx.fillText(
-            distanceTwoDecimals,
-            distance.x1 + (distance.x2 - distance.x1) / 2 - textWidth / 2,
-            50
-          );
+          drawDistance(distance.x1, distance.x2, yLocation);
         });
       }
 
       function addFrame() {
-        let frameWidth = parseInt(document.getElementById("frameWidth").value);
-        let frameHeight = parseInt(
-          document.getElementById("frameHeight").value
+        let frameWidth = parseMeasurementToCm(
+          document.getElementById("frameWidth").value
         );
-        frameHeight = frameHeight || frameWidth;
+        let frameHeight = 30;
         let frame = { width: frameWidth, height: frameHeight, x: 0, y: 0 };
         frames.push(frame);
+
+        let distributionStyleRadio = document.querySelector(
+          'input[name="distributionStyle"]:checked'
+        );
+
+        let distributionStyle = distributionStyleRadio
+          ? distributionStyleRadio.value
+          : "distribute";
+
+        if (distributionStyle === "distribute") {
+          distributeFrames();
+        } else if (distributionStyle === "equidistant") {
+          equidistantFrames();
+        } else {
+          drawFrame(frame);
+          drawDistances();
+        }
+
         distributeFrames();
       }
 
       function drawFrame(frame) {
         ctx.strokeStyle = "black"; // or any color for the border
         ctx.fillStyle = "blue"; // or any color for the fill
-        ctx.strokeRect(frame.x, frame.y, frame.width, frame.height);
+
+        let actualX = frame.x; // * ratioCanvasSizeToWallSize;
+        let actualWidth = frame.width; // * ratioCanvasSizeToWallSize;
+
+        ctx.strokeRect(actualX, frame.y, actualWidth, frame.height);
       }
 
       let selectedFrame = null;
