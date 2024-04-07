@@ -6,6 +6,7 @@ let setWallButton = document.getElementById('setWall');
 let chevronSize = 5;
 let wallWidth = 300;
 let ratioCanvasSizeToWallSize = wallWidth / canvas.width; // 300cm to canvas.width ratio
+const wallWidthInput = document.getElementById('wallWidth');
 
 let selectedFrame = null;
 
@@ -15,32 +16,75 @@ let distributionStyleRadios = document.querySelectorAll('input[name="distributio
 
 addFrameButton.addEventListener('click', addFrame);
 
-function serializedState() {
-  const simplifiedFrames = new Array(frames.map((frame) => ({
-    width: frame.width,
-    height: frame.height,
-    x: frame.x,
-    y: frame.y,
-  })));
+function saveState() {
+  const frameWidths = frames
+    .sort((a, b) => a.x - b.x)
+    .map((frame) => (frame.width * ratioCanvasSizeToWallSize).toFixed(2));
 
   let distributionStyle = document.querySelector('input[name="distributionStyle"]:checked').value;
-  let dist = '';
+  let dist = 'ff';
 
-  if (distributionStyle === 'distribute') {
-    dist = 'distribute';
-  } else if (distributionStyle === 'equidistant') {
-    dist = 'equidistant';
+  if (distributionStyle === 'dd') {
+    dist = 'dd';
+  } else if (distributionStyle === 'eq') {
+    dist = 'eq';
   }
-
 
   state = {
     ww: wallWidth,
-    ratio: ratioCanvasSizeToWallSize,
-    f: simplifiedFrames,
     dist: dist,
+  };
+
+  const urlParams = new URLSearchParams(state);
+  frameWidths.forEach((frameWidth) => {
+    urlParams.append('fw', frameWidth);
+  });
+
+  window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`);
+}
+
+function loadState() {
+  const urlParams = new URLSearchParams(window.location.search);
+  wallWidth = parseInt(urlParams.get('ww'));
+  const dist = urlParams.get('dist');
+  const frameWidths = urlParams.getAll('fw');
+
+  ratioCanvasSizeToWallSize = wallWidth / canvas.width;
+
+  frames = frameWidths.map((frameWidth) => {
+    return {
+      width: parseFloat(frameWidth) / ratioCanvasSizeToWallSize,
+      height: 30,
+      x: 0,
+      y: yLocation - 30 / 2,
+    };
+  });
+
+  if (dist === 'dd') {
+    distributionStyleRadios.forEach((radio) => {
+      if (radio.value === 'dd') {
+        radio.checked = true;
+      }
+    });
+    distributeFramesEvenly();
+  } else if (dist === 'eq') {
+    distributionStyleRadios.forEach((radio) => {
+      if (radio.value === 'eq') {
+        radio.checked = true;
+      }
+    });
+    distributeFramesSameDistance();
+  } else {
+    distributionStyleRadios.forEach((radio) => {
+      if (radio.value === 'ff') {
+        radio.checked = true;
+      }
+    });
   }
 
-  return state;
+  wallWidthInput.value = `${wallWidth}cm`;
+
+  drawCanvas();
 }
 
 function drawCanvas() {
@@ -48,6 +92,8 @@ function drawCanvas() {
   frames.forEach(drawFrame);
   drawDistanceLines();
   drawDistanceLine(0, canvas.width, yLocation * 2);
+
+  saveState();
 }
 
 function parseMeasurementToCm(measurement) {
@@ -63,7 +109,7 @@ function parseMeasurementToCm(measurement) {
 }
 
 setWallButton.addEventListener('click', function () {
-  let wallWidth = parseMeasurementToCm(document.getElementById('wallWidth').value);
+  let wallWidth = parseMeasurementToCm(wallWidthInput.value);
 
   ratioCanvasSizeToWallSize = wallWidth / canvas.width;
 
@@ -167,9 +213,9 @@ function addFrame() {
 
   let distributionStyle = document.querySelector('input[name="distributionStyle"]:checked').value;
 
-  if (distributionStyle === 'distribute') {
+  if (distributionStyle === 'dd') {
     distributeFramesEvenly();
-  } else if (distributionStyle === 'equidistant') {
+  } else if (distributionStyle === 'eq') {
     distributeFramesSameDistance();
   }
 
@@ -216,9 +262,9 @@ canvas.addEventListener('mouseup', function (e) {
 
   let distributionStyle = document.querySelector('input[name="distributionStyle"]:checked').value;
 
-  if (distributionStyle === 'distribute') {
+  if (distributionStyle === 'dd') {
     distributeFramesEvenly();
-  } else if (distributionStyle === 'equidistant') {
+  } else if (distributionStyle === 'eq') {
     distributeFramesSameDistance();
   }
   drawCanvas();
@@ -226,12 +272,14 @@ canvas.addEventListener('mouseup', function (e) {
 
 distributionStyleRadios.forEach((radio) => {
   radio.addEventListener('change', function () {
-    if (radio.value === 'distribute') {
+    if (radio.value === 'dd') {
       distributeFramesEvenly();
-    } else if (radio.value === 'equidistant') {
+    } else if (radio.value === 'eq') {
       distributeFramesSameDistance();
     }
 
     drawCanvas();
   });
 });
+
+loadState();
