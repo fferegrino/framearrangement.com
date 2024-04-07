@@ -114,7 +114,7 @@ function parseMeasurementToCm(measurement) {
 }
 
 setWallButton.addEventListener('click', function () {
-  let wallWidth = parseMeasurementToCm(wallWidthInput.value);
+  wallWidth = parseMeasurementToCm(wallWidthInput.value);
 
   ratioCanvasSizeToWallSize = wallWidth / canvas.width;
 
