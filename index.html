@@ -20,21 +20,23 @@
       name="distributionStyle"
       value="distribute"
     />
-    <label for="distribute">Distribute Frames</label>
+    <label for="distributionDistributed">Distribute Frames</label>
     <input
       type="radio"
       id="distributionEquidistant"
       name="distributionStyle"
       value="equidistant"
+
+      checked
     />
-    <label for="equidistant">Equidistant Frames</label>
+    <label for="distributionEquidistant">Equidistant Frames</label>
     <input
       type="radio"
       id="distributionFreeform"
       name="distributionStyle"
       value="freeform"
     />
-    <label for="freeform">Freeform</label>
+    <label for="distributionFreeform">Freeform</label>
 
     <hr />
 
@@ -48,7 +50,19 @@
       let ratioCanvasSizeToWallSize = 300 / 1000; // 300cm to 1000px
       const yLocation = canvas.height / 3;
 
+
+      let distributionStyleRadios = document.querySelectorAll(
+            'input[name="distributionStyle"]'
+        );
+
       addFrameButton.addEventListener("click", addFrame);
+
+      function drawCanvas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        frames.forEach(drawFrame);
+        drawDistances();
+        drawDistance(0, canvas.width, yLocation * 2);
+      }
 
       function parseMeasurementToCm(measurement) {
         let measurementInCm = 0;
@@ -71,7 +85,7 @@
 
         ratioCanvasSizeToWallSize = wallWidth / canvas.width;
 
-        drawDistance(0, canvas.width, yLocation * 2);
+        drawCanvas();
       });
 
       function equidistantFrames() {
@@ -92,14 +106,9 @@
           frame.x = currentX;
           currentX += frame.width + gapEvery;
         });
-
-        sortedFrames.forEach(drawFrame);
-        drawDistances();
-        drawDistance(0, canvas.width, yLocation *2);
       }
 
       function distributeFrames() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
         let wallWidth = parseInt(canvas.width);
         let frameCount = frames.length;
         let frameEvery = wallWidth / (frameCount + 1);
@@ -109,10 +118,6 @@
           frame.x = (index + 1) * frameEvery - frame.width / 2;
           frame.y = yLocation - frame.height / 2;
         });
-        sortedFrames.forEach(drawFrame);
-
-        drawDistances();
-        drawDistance(0, canvas.width, yLocation * 2);
       }
 
       function drawDistance(x1, x2, y) {
@@ -168,29 +173,20 @@
         );
         let frameHeight = 30;
         let frame = { width: frameWidth / ratioCanvasSizeToWallSize
-            , height: frameHeight, x: 0, y: 0 };
+            , height: frameHeight, x: 0, y: yLocation - frameHeight / 2 };
         frames.push(frame);
 
-        console.log(frames);
+            let distributionStyle = document.querySelector(
+                'input[name="distributionStyle"]:checked'
+            ).value;
 
-        let distributionStyleRadio = document.querySelector(
-          'input[name="distributionStyle"]:checked'
-        );
+            if (distributionStyle === "distribute") {
+                distributeFrames();
+            } else if (distributionStyle === "equidistant") {
+                equidistantFrames();
+            }
 
-        let distributionStyle = distributionStyleRadio
-          ? distributionStyleRadio.value
-          : "distribute";
-
-        if (distributionStyle === "distribute") {
-          distributeFrames();
-        } else if (distributionStyle === "equidistant") {
-          equidistantFrames();
-        } else {
-          drawFrame(frame);
-          drawDistances();
-        }
-
-        distributeFrames();
+        drawCanvas();
       }
 
       function drawFrame(frame) {
@@ -223,11 +219,13 @@
         if (selectedFrame) {
           let rect = canvas.getBoundingClientRect();
           selectedFrame.x = e.clientX - rect.left - selectedFrame.width / 2;
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          frames.forEach(drawFrame);
 
-          drawDistances();
-          drawDistance(0, canvas.width, yLocation * 2);
+          drawCanvas();
+        //   ctx.clearRect(0, 0, canvas.width, canvas.height);
+        //   frames.forEach(drawFrame);
+
+        //   drawDistances();
+        //   drawDistance(0, canvas.width, yLocation * 2);
         }
       });
 
@@ -235,26 +233,17 @@
         selectedFrame = null;
       });
 
-      // Listener for the radio distribution style
-        let distributionStyleRadios = document.querySelectorAll(
-            'input[name="distributionStyle"]'
-        );
 
         distributionStyleRadios.forEach((radio) => {
             radio.addEventListener("change", function () {
-                let distributionStyle = document.querySelector(
-                    'input[name="distributionStyle"]:checked'
-                ).value;
 
-                if (distributionStyle === "distribute") {
+                if (radio.value === "distribute") {
                     distributeFrames();
-                } else if (distributionStyle === "equidistant") {
+                } else if (radio.value === "equidistant") {
                     equidistantFrames();
-                } else {
-                    drawFrame(frame);
-                    drawDistances();
-                    drawDistance(0, canvas.width, yLocation * 2);
                 }
+                
+                drawCanvas();
             });
         });
     </script>
