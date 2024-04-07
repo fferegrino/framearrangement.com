@@ -40,7 +40,7 @@ function saveState() {
 
   const urlParams = new URLSearchParams(state);
   frameWidths.forEach((frameWidth) => {
-    urlParams.append('fw', frameWidth);
+    urlParams.append('fw', frameWidth.toFixed(2));
   });
 
   window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`);
