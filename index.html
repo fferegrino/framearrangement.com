@@ -9,12 +9,10 @@
     </style>
   </head>
   <body>
-    <input id="wallWidth" placeholder="5.0m" />
-    <input id="wallHeight" placeholder="Wall Height" />
+    <input id="wallWidth" placeholder="3.0m" value="3.0m" />
     <button id="setWall">Set Wall Dimensions</button>
     <hr />
-    <input id="frameWidth" value="20" placeholder="Frame Width" />
-    <input id="frameHeight" placeholder="Frame Height" />
+    <input id="frameWidth" value="30cm" placeholder="30cm" />
     <button id="addFrame">Add Frame</button>
     <input
       type="radio"
@@ -40,16 +38,15 @@
 
     <hr />
 
-    <canvas id="wall" width="1000" height="100"></canvas>
+    <canvas id="wall" width="1000" height="300"></canvas>
     <script>
       let frames = [];
       let canvas = document.getElementById("wall");
       let ctx = canvas.getContext("2d");
       let addFrameButton = document.getElementById("addFrame");
       let chevronSize = 5;
-      let ratioCanvasSizeToWallSize = 500 / 1000; // 500cm to 1000px
-
-      const yLocation = canvas.height / 2;
+      let ratioCanvasSizeToWallSize = 300 / 1000; // 300cm to 1000px
+      const yLocation = canvas.height / 3;
 
       addFrameButton.addEventListener("click", addFrame);
 
@@ -73,10 +70,8 @@
         );
 
         ratioCanvasSizeToWallSize = wallWidth / canvas.width;
-        console.log(ratioCanvasSizeToWallSize);
 
-        drawDistance(0, canvas.width, yLocation + 20);
-        distributeFrames();
+        drawDistance(0, canvas.width, yLocation * 2);
       });
 
       function equidistantFrames() {
@@ -100,6 +95,7 @@
 
         sortedFrames.forEach(drawFrame);
         drawDistances();
+        drawDistance(0, canvas.width, yLocation *2);
       }
 
       function distributeFrames() {
@@ -112,11 +108,11 @@
         sortedFrames.forEach((frame, index) => {
           frame.x = (index + 1) * frameEvery - frame.width / 2;
           frame.y = yLocation - frame.height / 2;
-          console.log(frame.x, frame.y);
         });
         sortedFrames.forEach(drawFrame);
 
         drawDistances();
+        drawDistance(0, canvas.width, yLocation * 2);
       }
 
       function drawDistance(x1, x2, y) {
@@ -171,8 +167,11 @@
           document.getElementById("frameWidth").value
         );
         let frameHeight = 30;
-        let frame = { width: frameWidth, height: frameHeight, x: 0, y: 0 };
+        let frame = { width: frameWidth / ratioCanvasSizeToWallSize
+            , height: frameHeight, x: 0, y: 0 };
         frames.push(frame);
+
+        console.log(frames);
 
         let distributionStyleRadio = document.querySelector(
           'input[name="distributionStyle"]:checked'
@@ -208,6 +207,7 @@
 
       canvas.addEventListener("mousedown", function (e) {
         let rect = canvas.getBoundingClientRect();
+
         let x = e.clientX - rect.left;
         let y = e.clientY - rect.top;
         selectedFrame = frames.find(
@@ -223,17 +223,40 @@
         if (selectedFrame) {
           let rect = canvas.getBoundingClientRect();
           selectedFrame.x = e.clientX - rect.left - selectedFrame.width / 2;
-          // selectedFrame.y = e.clientY - rect.top - selectedFrame.height / 2;
           ctx.clearRect(0, 0, canvas.width, canvas.height);
           frames.forEach(drawFrame);
 
           drawDistances();
+          drawDistance(0, canvas.width, yLocation * 2);
         }
       });
 
       canvas.addEventListener("mouseup", function (e) {
         selectedFrame = null;
       });
+
+      // Listener for the radio distribution style
+        let distributionStyleRadios = document.querySelectorAll(
+            'input[name="distributionStyle"]'
+        );
+
+        distributionStyleRadios.forEach((radio) => {
+            radio.addEventListener("change", function () {
+                let distributionStyle = document.querySelector(
+                    'input[name="distributionStyle"]:checked'
+                ).value;
+
+                if (distributionStyle === "distribute") {
+                    distributeFrames();
+                } else if (distributionStyle === "equidistant") {
+                    equidistantFrames();
+                } else {
+                    drawFrame(frame);
+                    drawDistances();
+                    drawDistance(0, canvas.width, yLocation * 2);
+                }
+            });
+        });
     </script>
   </body>
 </html>
