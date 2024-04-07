@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>Frame Arrangement</title>
-    <meta name="description" content="A tool for calculating optimal distances between picture frames." />
+    <meta name="description" content="A tool for calculating optimal distances between picture frames on a wall." />
     <meta name="keywords" content="Picture frames, Wall decor, Distance calculator, Wall art" />
     <style>
       body {
@@ -20,12 +20,14 @@
       }
     </style>
     <link rel="stylesheet" href="index.css" />
+    <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg" />
+    <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
   </head>
   <body>
     <h1 class="text-center text-5xl font-bold text-gray-800 mt-9 mb-6">Frame arrangement</h1>
     <p class="text-center text-lg text-gray-800 m-4 mb-9">A tool for calculating distances between picture frames.</p>
     <div class="container mx-auto flex items-start justify-center my-9">
-      <div class="grid grid-cols-5 gap-4">
+      <div class="grid grid-cols-6 gap-4">
         <input
           class="shadow appearance-none rounded w-full py-1 px-2 text-gray-700leading-tight focus:outline-none focus:shadow-outline"
           id="wallWidth"
@@ -53,12 +55,17 @@
         <select
           class="block cursor-pointer appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
           id="distributionStyle"
-          class="col-span-1"
         >
           <option value="dd">Distribute Frames</option>
           <option value="eq">Equidistant Frames</option>
           <option value="ff">Freeform</option>
         </select>
+        <button
+          class="shadow bg-red-500 hover:bg-red-300 focus:shadow-outline focus:outline-none text-white font-bold py-1 px-2 rounded"
+          id="clearFrames"
+        >
+          Clear frames
+        </button>
       </div>
     </div>
     <div class="container mx-auto flex items-start justify-center my-5">

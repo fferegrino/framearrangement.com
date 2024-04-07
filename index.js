@@ -3,6 +3,7 @@ let canvas = document.getElementById('wall');
 let ctx = canvas.getContext('2d');
 let addFrameButton = document.getElementById('addFrame');
 let setWallButton = document.getElementById('setWall');
+let clearFramesButton = document.getElementById('clearFrames');
 let distributionStyle = document.getElementById('distributionStyle');
 let chevronSize = 5;
 let wallWidth = 300;
@@ -10,6 +11,7 @@ let ratioCanvasSizeToWallSize = wallWidth / canvas.width; // 300cm to canvas.wid
 const wallWidthInput = document.getElementById('wallWidth');
 const distanceDrawingPadding = 2;
 const canvasForegroundColor = 'rgb(59 7 100)';
+const noFramesMessage = 'No frames added, click "Add frame" to add a frame';
 
 let selectedFrame = null;
 
@@ -81,8 +83,18 @@ function loadState() {
 
 function drawCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  frames.forEach(drawFrame);
-  drawDistanceLines();
+  if (frames.length !== 0) {
+
+    frames.forEach(drawFrame);
+    drawDistanceLines();
+  }
+  else {
+    ctx.font = '20px sans-serif';
+    ctx.fillStyle = canvasForegroundColor;
+    let textWidth = ctx.measureText(noFramesMessage).width;
+    ctx.fillText(noFramesMessage, canvas.width / 2 - textWidth / 2
+    , yLocation);
+  }
   drawDistanceLine(0, canvas.width, yLocation * 2);
 
   saveState();
@@ -273,6 +285,11 @@ distributionStyle.addEventListener('change', function () {
     distributeFramesSameDistance();
   }
 
+  drawCanvas();
+});
+
+clearFramesButton.addEventListener('click', function () {
+  frames = [];
   drawCanvas();
 });
 
