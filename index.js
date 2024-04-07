@@ -4,7 +4,8 @@ let ctx = canvas.getContext('2d');
 let addFrameButton = document.getElementById('addFrame');
 let setWallButton = document.getElementById('setWall');
 let chevronSize = 5;
-let ratioCanvasSizeToWallSize = 300 / 1000; // 300cm to 1000px
+let wallWidth = 300;
+let ratioCanvasSizeToWallSize = wallWidth / canvas.width; // 300cm to canvas.width ratio
 
 let selectedFrame = null;
 
@@ -13,6 +14,34 @@ const yLocation = canvas.height / 3;
 let distributionStyleRadios = document.querySelectorAll('input[name="distributionStyle"]');
 
 addFrameButton.addEventListener('click', addFrame);
+
+function serializedState() {
+  const simplifiedFrames = new Array(frames.map((frame) => ({
+    width: frame.width,
+    height: frame.height,
+    x: frame.x,
+    y: frame.y,
+  })));
+
+  let distributionStyle = document.querySelector('input[name="distributionStyle"]:checked').value;
+  let dist = '';
+
+  if (distributionStyle === 'distribute') {
+    dist = 'distribute';
+  } else if (distributionStyle === 'equidistant') {
+    dist = 'equidistant';
+  }
+
+
+  state = {
+    ww: wallWidth,
+    ratio: ratioCanvasSizeToWallSize,
+    f: simplifiedFrames,
+    dist: dist,
+  }
+
+  return state;
+}
 
 function drawCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -42,7 +71,6 @@ setWallButton.addEventListener('click', function () {
 });
 
 function distributeFramesSameDistance() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
   let wallWidth = parseInt(canvas.width);
 
   let sortedFrames = frames.slice().sort((a, b) => a.x - b.x);
@@ -161,10 +189,14 @@ function drawFrame(frame) {
 canvas.addEventListener('mousedown', function (e) {
   let rect = canvas.getBoundingClientRect();
 
-  let x = e.clientX - rect.left;
-  let y = e.clientY - rect.top;
+  let pointerPositionX = e.clientX - rect.left;
+  let pointerPositionY = e.clientY - rect.top;
   selectedFrame = frames.find(
-    (frame) => x > frame.x && x < frame.x + frame.width && y > frame.y && y < frame.y + frame.height,
+    (frame) =>
+      pointerPositionX > frame.x &&
+      pointerPositionX < frame.x + frame.width &&
+      pointerPositionY > frame.y &&
+      pointerPositionY < frame.y + frame.height,
   );
 });
 
