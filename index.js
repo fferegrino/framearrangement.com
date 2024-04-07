@@ -258,11 +258,9 @@ canvas.addEventListener('mouseup', function (e) {
   selectedFrame = null;
   canvas.style.cursor = 'default';
 
-  let distributionStyle = document.querySelector('input[name="distributionStyle"]:checked').value;
-
-  if (distributionStyle === 'dd') {
+  if (distributionStyle.value === 'dd') {
     distributeFramesEvenly();
-  } else if (distributionStyle === 'eq') {
+  } else if (distributionStyle.value === 'eq') {
     distributeFramesSameDistance();
   }
   drawCanvas();
