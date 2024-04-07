@@ -91,7 +91,8 @@ function drawDistance(x1, x2, y) {
 
   ctx.stroke();
 
-  let distanceTwoDecimals = ((x2 - x1) * ratioCanvasSizeToWallSize).toFixed(2);
+  let distanceTwoDecimals = ((x2 - x1) * ratioCanvasSizeToWallSize);
+  distanceTwoDecimals = Number.isInteger(distanceTwoDecimals) ? distanceTwoDecimals.toFixed(0) : distanceTwoDecimals.toFixed(1);
   let distanceText = `${distanceTwoDecimals}cm`;
   ctx.font = "20px serif";
   let textWidth = ctx.measureText(distanceText).width;
