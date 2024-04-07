@@ -1,8 +1,8 @@
 let frames = [];
-let canvas = document.getElementById("wall");
-let ctx = canvas.getContext("2d");
-let addFrameButton = document.getElementById("addFrame");
-let setWallButton = document.getElementById("setWall");
+let canvas = document.getElementById('wall');
+let ctx = canvas.getContext('2d');
+let addFrameButton = document.getElementById('addFrame');
+let setWallButton = document.getElementById('setWall');
 let chevronSize = 5;
 let ratioCanvasSizeToWallSize = 300 / 1000; // 300cm to 1000px
 
@@ -10,11 +10,9 @@ let selectedFrame = null;
 
 const yLocation = canvas.height / 3;
 
-let distributionStyleRadios = document.querySelectorAll(
-  'input[name="distributionStyle"]',
-);
+let distributionStyleRadios = document.querySelectorAll('input[name="distributionStyle"]');
 
-addFrameButton.addEventListener("click", addFrame);
+addFrameButton.addEventListener('click', addFrame);
 
 function drawCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -25,9 +23,9 @@ function drawCanvas() {
 
 function parseMeasurementToCm(measurement) {
   let measurementInCm = 0;
-  if (measurement.includes("cm")) {
+  if (measurement.includes('cm')) {
     measurementInCm = parseFloat(measurement);
-  } else if (measurement.includes("m")) {
+  } else if (measurement.includes('m')) {
     measurementInCm = parseFloat(measurement) * 100;
   } else {
     measurementInCm = parseFloat(measurement);
@@ -35,10 +33,8 @@ function parseMeasurementToCm(measurement) {
   return measurementInCm;
 }
 
-setWallButton.addEventListener("click", function () {
-  let wallWidth = parseMeasurementToCm(
-    document.getElementById("wallWidth").value,
-  );
+setWallButton.addEventListener('click', function () {
+  let wallWidth = parseMeasurementToCm(document.getElementById('wallWidth').value);
 
   ratioCanvasSizeToWallSize = wallWidth / canvas.width;
 
@@ -81,7 +77,7 @@ function distributeFramesEvenly() {
  * @param {Number} y  - y coordinate of the line
  */
 function drawDistanceLine(x1, x2, y) {
-  ctx.strokeStyle = "black";
+  ctx.strokeStyle = 'black';
   ctx.beginPath();
 
   // Draw line
@@ -107,7 +103,7 @@ function drawDistanceLine(x1, x2, y) {
     ? distanceTwoDecimals.toFixed(0)
     : distanceTwoDecimals.toFixed(1);
   let distanceText = `${distanceTwoDecimals}cm`;
-  ctx.font = "20px serif";
+  ctx.font = '20px serif';
   let textWidth = ctx.measureText(distanceText).width;
   ctx.fillText(distanceText, x1 + (x2 - x1) / 2 - textWidth / 2, y);
 }
@@ -131,9 +127,7 @@ function drawDistanceLines() {
 }
 
 function addFrame() {
-  let frameWidth = parseMeasurementToCm(
-    document.getElementById("frameWidth").value,
-  );
+  let frameWidth = parseMeasurementToCm(document.getElementById('frameWidth').value);
   let frameHeight = 30;
   let frame = {
     width: frameWidth / ratioCanvasSizeToWallSize,
@@ -143,13 +137,11 @@ function addFrame() {
   };
   frames.push(frame);
 
-  let distributionStyle = document.querySelector(
-    'input[name="distributionStyle"]:checked',
-  ).value;
+  let distributionStyle = document.querySelector('input[name="distributionStyle"]:checked').value;
 
-  if (distributionStyle === "distribute") {
+  if (distributionStyle === 'distribute') {
     distributeFramesEvenly();
-  } else if (distributionStyle === "equidistant") {
+  } else if (distributionStyle === 'equidistant') {
     distributeFramesSameDistance();
   }
 
@@ -157,8 +149,8 @@ function addFrame() {
 }
 
 function drawFrame(frame) {
-  ctx.strokeStyle = "black"; // or any color for the border
-  ctx.fillStyle = "blue"; // or any color for the fill
+  ctx.strokeStyle = 'black'; // or any color for the border
+  ctx.fillStyle = 'blue'; // or any color for the fill
 
   let actualX = frame.x; // * ratioCanvasSizeToWallSize;
   let actualWidth = frame.width; // * ratioCanvasSizeToWallSize;
@@ -166,51 +158,45 @@ function drawFrame(frame) {
   ctx.strokeRect(actualX, frame.y, actualWidth, frame.height);
 }
 
-canvas.addEventListener("mousedown", function (e) {
+canvas.addEventListener('mousedown', function (e) {
   let rect = canvas.getBoundingClientRect();
 
   let x = e.clientX - rect.left;
   let y = e.clientY - rect.top;
   selectedFrame = frames.find(
-    (frame) =>
-      x > frame.x &&
-      x < frame.x + frame.width &&
-      y > frame.y &&
-      y < frame.y + frame.height,
+    (frame) => x > frame.x && x < frame.x + frame.width && y > frame.y && y < frame.y + frame.height,
   );
 });
 
-canvas.addEventListener("mousemove", function (e) {
+canvas.addEventListener('mousemove', function (e) {
   if (selectedFrame) {
     let rect = canvas.getBoundingClientRect();
     selectedFrame.x = e.clientX - rect.left - selectedFrame.width / 2;
 
-    canvas.style.cursor = "grabbing";
+    canvas.style.cursor = 'grabbing';
     drawCanvas();
   }
 });
 
-canvas.addEventListener("mouseup", function (e) {
+canvas.addEventListener('mouseup', function (e) {
   selectedFrame = null;
-  canvas.style.cursor = "default";
+  canvas.style.cursor = 'default';
 
-  let distributionStyle = document.querySelector(
-    'input[name="distributionStyle"]:checked',
-  ).value;
+  let distributionStyle = document.querySelector('input[name="distributionStyle"]:checked').value;
 
-  if (distributionStyle === "distribute") {
+  if (distributionStyle === 'distribute') {
     distributeFramesEvenly();
-  } else if (distributionStyle === "equidistant") {
+  } else if (distributionStyle === 'equidistant') {
     distributeFramesSameDistance();
   }
   drawCanvas();
 });
 
 distributionStyleRadios.forEach((radio) => {
-  radio.addEventListener("change", function () {
-    if (radio.value === "distribute") {
+  radio.addEventListener('change', function () {
+    if (radio.value === 'distribute') {
       distributeFramesEvenly();
-    } else if (radio.value === "equidistant") {
+    } else if (radio.value === 'equidistant') {
       distributeFramesSameDistance();
     }
 

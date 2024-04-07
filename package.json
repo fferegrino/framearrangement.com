@@ -1,5 +1,10 @@
 {
   "dependencies": {
     "prettier": "^3.2.5"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "all",
+    "printWidth": 120
   }
 }
