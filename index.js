@@ -45,8 +45,13 @@ function saveState() {
 
 function loadState() {
   const urlParams = new URLSearchParams(window.location.search);
-  wallWidth = parseInt(urlParams.get('ww'));
-  const dist = urlParams.get('dist');
+
+  if (!urlParams.has('ww')) {
+    wallWidth = parseMeasurementToCm(wallWidthInput.value);
+  } else {
+    wallWidth = parseMeasurementToCm(urlParams.get('ww'));
+  }
+  const dist = urlParams.get('dist') || 'eq';
   const frameWidths = urlParams.getAll('fw');
 
   ratioCanvasSizeToWallSize = wallWidth / canvas.width;
