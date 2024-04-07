@@ -91,8 +91,10 @@ function drawDistance(x1, x2, y) {
 
   ctx.stroke();
 
-  let distanceTwoDecimals = ((x2 - x1) * ratioCanvasSizeToWallSize);
-  distanceTwoDecimals = Number.isInteger(distanceTwoDecimals) ? distanceTwoDecimals.toFixed(0) : distanceTwoDecimals.toFixed(1);
+  let distanceTwoDecimals = (x2 - x1) * ratioCanvasSizeToWallSize;
+  distanceTwoDecimals = Number.isInteger(distanceTwoDecimals)
+    ? distanceTwoDecimals.toFixed(0)
+    : distanceTwoDecimals.toFixed(1);
   let distanceText = `${distanceTwoDecimals}cm`;
   ctx.font = "20px serif";
   let textWidth = ctx.measureText(distanceText).width;
@@ -182,6 +184,17 @@ canvas.addEventListener("mousemove", function (e) {
 canvas.addEventListener("mouseup", function (e) {
   selectedFrame = null;
   canvas.style.cursor = "default";
+
+  let distributionStyle = document.querySelector(
+    'input[name="distributionStyle"]:checked'
+  ).value;
+
+  if (distributionStyle === "distribute") {
+    distributeFrames();
+  } else if (distributionStyle === "equidistant") {
+    equidistantFrames();
+  }
+  drawCanvas();
 });
 
 distributionStyleRadios.forEach((radio) => {
