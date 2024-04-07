@@ -2,6 +2,21 @@
   <head>
     <title>Home</title>
     <style>
+      body {
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      .canvas-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        margin: 10px;
+      }
+      
       #wall {
         /* border: 2px solid black; */
         background-color: antiquewhite;
@@ -9,38 +24,42 @@
     </style>
   </head>
   <body>
-    <input id="wallWidth" placeholder="3.0m" value="3.0m" />
-    <button id="setWall">Set Wall Dimensions</button>
-    <hr />
-    <input id="frameWidth" value="30cm" placeholder="30cm" />
-    <button id="addFrame">Add Frame</button>
-    <input
-      type="radio"
-      id="distributionDistributed"
-      name="distributionStyle"
-      value="distribute"
-    />
-    <label for="distributionDistributed">Distribute Frames</label>
-    <input
-      type="radio"
-      id="distributionEquidistant"
-      name="distributionStyle"
-      value="equidistant"
+    <h1>Frame arrangement</h1>
 
-      checked
-    />
-    <label for="distributionEquidistant">Equidistant Frames</label>
-    <input
-      type="radio"
-      id="distributionFreeform"
-      name="distributionStyle"
-      value="freeform"
-    />
-    <label for="distributionFreeform">Freeform</label>
+    <div class="canvas-container">
+      <input id="wallWidth" placeholder="3.0m" value="3.0m" />
+      <button id="setWall">Set Wall Dimensions</button>
+    </div>
+    <div class="canvas-container">
+      <input id="frameWidth" value="30cm" placeholder="30cm" />
+      <button id="addFrame">Add Frame</button>
+      <input
+        type="radio"
+        id="distributionDistributed"
+        name="distributionStyle"
+        value="distribute"
+      />
+      <label for="distributionDistributed">Distribute Frames</label>
+      <input
+        type="radio"
+        id="distributionEquidistant"
+        name="distributionStyle"
+        value="equidistant"
+        checked
+      />
+      <label for="distributionEquidistant">Equidistant Frames</label>
+      <input
+        type="radio"
+        id="distributionFreeform"
+        name="distributionStyle"
+        value="freeform"
+      />
+      <label for="distributionFreeform">Freeform</label>
+    </div>
 
-    <hr />
-
-    <canvas id="wall" width="1000" height="300"></canvas>
+    <div class="canvas-container">
+      <canvas id="wall" width="1000" height="300"></canvas>
+    </div>
     <script src="index.js"></script>
   </body>
 </html>
