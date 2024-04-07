@@ -8,6 +8,8 @@ let chevronSize = 5;
 let wallWidth = 300;
 let ratioCanvasSizeToWallSize = wallWidth / canvas.width; // 300cm to canvas.width ratio
 const wallWidthInput = document.getElementById('wallWidth');
+const distanceDrawingPadding = 2;
+const canvasForegroundColor = 'rgb(59 7 100)';
 
 let selectedFrame = null;
 
@@ -141,23 +143,23 @@ function distributeFramesEvenly() {
  * @param {Number} y  - y coordinate of the line
  */
 function drawDistanceLine(x1, x2, y) {
-  ctx.strokeStyle = 'black';
+  ctx.strokeStyle = canvasForegroundColor;
   ctx.beginPath();
 
   // Draw line
-  ctx.moveTo(x1, y);
-  ctx.lineTo(x2, y);
+  ctx.moveTo(x1 + distanceDrawingPadding, y);
+  ctx.lineTo(x2 - distanceDrawingPadding, y);
 
   // Add chevrons
-  ctx.moveTo(x1, y);
-  ctx.lineTo(x1 + chevronSize, y - chevronSize);
-  ctx.moveTo(x1, y);
-  ctx.lineTo(x1 + chevronSize, y + chevronSize);
+  ctx.moveTo(x1 + distanceDrawingPadding, y);
+  ctx.lineTo(x1 + distanceDrawingPadding + chevronSize, y - chevronSize);
+  ctx.moveTo(x1 + distanceDrawingPadding, y);
+  ctx.lineTo(x1 + distanceDrawingPadding + chevronSize, y + chevronSize);
 
-  ctx.moveTo(x2, y);
-  ctx.lineTo(x2 - chevronSize, y - chevronSize);
-  ctx.moveTo(x2, y);
-  ctx.lineTo(x2 - chevronSize, y + chevronSize);
+  ctx.moveTo(x2 - distanceDrawingPadding, y);
+  ctx.lineTo(x2 - distanceDrawingPadding - chevronSize, y - chevronSize);
+  ctx.moveTo(x2 - distanceDrawingPadding, y);
+  ctx.lineTo(x2 - distanceDrawingPadding - chevronSize, y + chevronSize);
 
   ctx.stroke();
 
@@ -167,9 +169,10 @@ function drawDistanceLine(x1, x2, y) {
     ? distanceTwoDecimals.toFixed(0)
     : distanceTwoDecimals.toFixed(1);
   let distanceText = `${distanceTwoDecimals}cm`;
-  ctx.font = '20px serif';
+  ctx.font = '20px sans-serif';
+  ctx.fillStyle = canvasForegroundColor;
   let textWidth = ctx.measureText(distanceText).width;
-  ctx.fillText(distanceText, x1 + (x2 - x1) / 2 - textWidth / 2, y);
+  ctx.fillText(distanceText, x1 + (x2 - x1) / 2 - textWidth / 2, y - 10);
 }
 
 function drawDistanceLines() {
@@ -213,13 +216,18 @@ function addFrame() {
 }
 
 function drawFrame(frame) {
-  ctx.strokeStyle = 'black'; // or any color for the border
-  ctx.fillStyle = 'blue'; // or any color for the fill
+  ctx.strokeStyle = canvasForegroundColor;
 
   let actualX = frame.x; // * ratioCanvasSizeToWallSize;
   let actualWidth = frame.width; // * ratioCanvasSizeToWallSize;
 
   ctx.strokeRect(actualX, frame.y, actualWidth, frame.height);
+
+  let distanceText = `${frame.width * ratioCanvasSizeToWallSize}cm`;
+  ctx.font = '20px sans-serif';
+  ctx.fillStyle = canvasForegroundColor;
+  let textWidth = ctx.measureText(distanceText).width;
+  ctx.fillText(distanceText, frame.x + frame.width / 2 - textWidth / 2, yLocation + 40);
 }
 
 canvas.addEventListener('mousedown', function (e) {

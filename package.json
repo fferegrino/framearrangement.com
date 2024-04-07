@@ -6,5 +6,8 @@
     "singleQuote": true,
     "trailingComma": "all",
     "printWidth": 120
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.3"
   }
 }

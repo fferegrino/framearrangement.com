@@ -18,34 +18,51 @@
         width: 100%;
         margin: 10px;
       }
-
-      #wall {
-        /* border: 2px solid black; */
-        background-color: antiquewhite;
-      }
     </style>
+    <link rel="stylesheet" href="index.css" />
   </head>
   <body>
-    <div class="canvas-container">
-      <h1 class="text-center text-3xl font-bold text-gray-800">Frame arrangement</h1>
-    </div>
-
-    <div class="canvas-container">
-      <div class="grid grid-cols-2 gap-4">
-        <input class="col-span-1" id="wallWidth" placeholder="3.0m" value="3.0m" />
-        <button id="setWall">Set Wall Dimensions</button>
-
-        <input class="col-span-1" id="frameWidth" value="30cm" placeholder="30cm" />
-        <button id="addFrame">Add Frame</button>
-        <select id="distributionStyle" class="col-span-1">
+    <h1 class="text-center text-5xl font-bold text-gray-800 mt-9 mb-6">Frame arrangement</h1>
+    <p class="text-center text-lg text-gray-800 m-4 mb-9">A tool for calculating distances between picture frames.</p>
+    <div class="container mx-auto flex items-start justify-center my-9">
+      <div class="grid grid-cols-5 gap-4">
+        <input
+          class="shadow appearance-none rounded w-full py-1 px-2 text-gray-700leading-tight focus:outline-none focus:shadow-outline"
+          id="wallWidth"
+          placeholder="3.0m"
+          value="3.0m"
+        />
+        <button
+          class="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-1 px-2 rounded"
+          id="setWall"
+        >
+          Set wall size
+        </button>
+        <input
+          class="shadow appearance-none rounded w-full py-1 px-2 text-gray-700leading-tight focus:outline-none focus:shadow-outline"
+          id="frameWidth"
+          value="30cm"
+          placeholder="30cm"
+        />
+        <button
+          class="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-1 px-2 rounded"
+          id="addFrame"
+        >
+          Add frame
+        </button>
+        <select
+          class="block cursor-pointer appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+          id="distributionStyle"
+          class="col-span-1"
+        >
           <option value="dd">Distribute Frames</option>
           <option value="eq">Equidistant Frames</option>
           <option value="ff">Freeform</option>
         </select>
       </div>
     </div>
-    <div class="canvas-container">
-      <canvas id="wall" width="1000" height="300"></canvas>
+    <div class="container mx-auto flex items-start justify-center my-5">
+      <canvas class="border border-purple-200 bg-purple-100" id="wall" width="1000" height="300"></canvas>
     </div>
     <script src="index.js"></script>
 
